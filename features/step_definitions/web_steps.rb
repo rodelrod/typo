@@ -320,7 +320,7 @@ end
 When /^I merge "(.*?)" with "(.*?)"$/ do |article_1, article_2|
   visit path_to(%Q{the edit article page for "#{article_1}"})
   fill_in "merge_with", :with => Article.find_by_title(article_2).id
-  click_button "Merge"
+  click_button "Merge Articles"
 end
 
 Then /^the body of "(.*?)" should be "(.*?)"$/ do |article_title, body|
