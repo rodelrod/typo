@@ -630,5 +630,30 @@ describe Article do
     end
 
   end
+  describe "#merge" do
+    before(:each) do
+      @article1 = Factory.create :article, :id => 111, :title => "Article 1", 
+                                 :author => 'Meireles', 
+                                 :body => "Here's my shitty first article."
+      @article2 = Factory.create :article, :id => 222, :title => "Article 2", 
+                                 :author => 'Fagundes',
+                                 :body => "Blogging is info pollution."
+      Factory.create :comment, :body => 'first comment', :article_id => @article1.id
+      Factory.create :comment, :body => 'second comment', :article_id => @article1.id
+      Factory.create :comment, :body => 'third comment', :article_id => @article2.id
+      @article1.merge(@article2)
+    end
+
+    it "should dump the body of the second article into the first" do
+      @article1.body.should == "Here's my shitty first article.\nBlogging is info pollution."
+    end 
+    it "should delete the second article after the merge" do
+      @article2.destroyed?.should == true
+    end
+    it "should dump all the comments in the second article into the first" do
+      @article1.comments.map{|c| c.body}.should =~ ['first comment', 'second comment', 'third comment']
+    end
+
+  end
 end
 

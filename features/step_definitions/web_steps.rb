@@ -38,8 +38,16 @@ Given /^the blog is set up$/ do
   User.create!({:login => 'admin',
                 :password => 'aaaaaaaa',
                 :email => 'joe@snow.com',
-                :profile_id => 1,
+                :profile_id => 1,   # admin
+                :id => 1,
                 :name => 'admin',
+                :state => 'active'})
+  User.create!({:login => 'user1',
+                :password => 'aaaaaaaa',
+                :email => 'jim@snow.com',
+                :profile_id => 2,   # publisher
+                :id => 2,
+                :name => 'user1',
                 :state => 'active'})
 end
 
@@ -276,3 +284,47 @@ end
 Then /^show me the page$/ do
   save_and_open_page
 end
+
+Given /^I have created an article "(.*?)" with text "(.*?)" and author "(.*?)"$/ do |title, body, author|
+  Factory.create :article, :title => title, :body => body, :author => author, 
+                 :published_at => Date.new(2012,10,10)
+end
+
+Given /^I have added a comment "(.*?)" to "(.*?)"$/ do |comment_text, article_title|
+  Factory.create :comment, :body => comment_text, :article_id => Article.find_by_title(article_title)
+end
+
+Then /^I can see the "(.*?)" button$/ do |button_text|
+  page.should have_button button_text
+end
+
+Then /^I can see the "(.*?)" text field$/ do |field_name|
+  page.should have_field field_name
+end
+
+When /^I am logged as non admin to the admin panel$/ do
+  visit '/accounts/login'
+  fill_in 'user_login', :with => 'user1'
+  fill_in 'user_password', :with => 'aaaaaaaa'
+  click_button 'Login'
+end
+
+Then /^I should not see the "(.*?)" button$/ do |button_text|
+  page.should_not have_button button_text
+end
+
+Then /^I should not see the "(.*?)" text field$/ do |field_name|
+  page.should_not have_field field_name
+end
+
+When /^I merge "(.*?)" with "(.*?)"$/ do |article_1, article_2|
+  visit path_to(%Q{the edit article page for "#{article_1}"})
+  fill_in "merge_with", :with => Article.find_by_title(article_2).id
+  click_button "Merge"
+end
+
+Then /^the body of "(.*?)" should be "(.*?)"$/ do |article_title, body|
+  article = Article.find_by_title(article_title)
+  article.body.should == body
+end
+

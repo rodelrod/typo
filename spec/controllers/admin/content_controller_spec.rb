@@ -671,4 +671,22 @@ describe Admin::ContentController do
 
     end
   end
+
+  describe 'merge two articles' do
+
+    it 'should merge the two articles and redirect to index' do
+      Article.should_receive(:merge).with(:id => 1, :merge_with => 2)
+      post :merge, :id => 1, :merge_with => 2
+    end
+    it 'should redirect to index' do 
+      post :merge, :id => 1, :merge_with => 2
+      assert_response :redirect, :action => 'index'
+    end
+    it 'should not merge if the user is not admin' do
+      user = Factory(:user, :profile => Factory(:profile_publisher))
+      request.session = { :user => @user.id }
+      Article.should_not_receive(:merge)
+      post :merge, :id => 1, :merge_with => 2
+    end
+  end
 end
