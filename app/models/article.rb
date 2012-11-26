@@ -417,7 +417,7 @@ class Article < Content
   end
 
   def merge(other)
-    self.body = self.body + "\n" + other.body
+    self.body = self.body + other.body
     self.comments = self.comments << other.comments
     other.reload
     other.destroy
