@@ -481,6 +481,23 @@ describe Admin::ContentController do
     it_should_behave_like 'destroy action'
     it_should_behave_like 'autosave action'
 
+    describe 'merge action' do
+      before(:each) do
+      end
+
+      it 'should merge the two articles and redirect to index' do
+        @article = mock_model("Article")
+        Article.stub!(:find_by_id).and_return(@article)
+        @article.should_receive(:merge).with(@article)
+        put :merge, {:id => 1, :merge_with => 2} 
+      end
+
+      it 'should redirect to index' do 
+        post :merge, {:id => 1, :merge_with => 2}
+        assert_response :redirect, :action => 'index'
+      end
+    end
+  
     describe 'edit action' do
 
       it 'should edit article' do
@@ -621,6 +638,17 @@ describe Admin::ContentController do
     it_should_behave_like 'index action'
     it_should_behave_like 'new action'
     it_should_behave_like 'destroy action'
+  
+    describe 'merge action' do
+
+      it 'should not merge if the user is not admin' do
+        @article = mock_model(Article)
+        Article.stub!(:find_by_id).and_return(@article)
+        @article.should_not_receive(:merge)
+        post :merge, {:id => 1, :merge_with => 2}
+      end
+
+    end
 
     describe 'edit action' do
 
@@ -672,21 +700,4 @@ describe Admin::ContentController do
     end
   end
 
-  describe 'merge two articles' do
-
-    it 'should merge the two articles and redirect to index' do
-      Article.should_receive(:merge).with(:id => 1, :merge_with => 2)
-      post :merge, :id => 1, :merge_with => 2
-    end
-    it 'should redirect to index' do 
-      post :merge, :id => 1, :merge_with => 2
-      assert_response :redirect, :action => 'index'
-    end
-    it 'should not merge if the user is not admin' do
-      user = Factory(:user, :profile => Factory(:profile_publisher))
-      request.session = { :user => @user.id }
-      Article.should_not_receive(:merge)
-      post :merge, :id => 1, :merge_with => 2
-    end
-  end
 end

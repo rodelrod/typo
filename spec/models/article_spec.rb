@@ -645,7 +645,7 @@ describe Article do
     end
 
     it "should dump the body of the second article into the first" do
-      @article1.body.should == "Here's my shitty first article.\nBlogging is info pollution."
+      @article1.body.should == "Here's my shitty first article.Blogging is info pollution."
     end 
     it "should delete the second article after the merge" do
       @article2.destroyed?.should == true
