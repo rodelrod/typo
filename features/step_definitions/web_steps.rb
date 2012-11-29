@@ -64,13 +64,13 @@ And /^I am logged into the admin panel$/ do
 end
 
 # Single-line step scoper
-When /^(.*) within (.*[^:])$/ do |step, parent|
-  with_scope(parent) { When step }
+When /^(.*) within (.*[^:])$/ do |do_something, parent|
+  with_scope(parent) { step(do_something) }
 end
 
 # Multi-line step scoper
-When /^(.*) within (.*[^:]):$/ do |step, parent, table_or_string|
-  with_scope(parent) { When "#{step}:", table_or_string }
+When /^(.*) within (.*[^:]):$/ do |do_something, parent, table_or_string|
+  with_scope(parent) { step("#{do_something}:", table_or_string) }
 end
 
 Given /^(?:|I )am on (.+)$/ do |page_name|
@@ -328,3 +328,22 @@ Then /^the body of "(.*?)" should be "(.*?)"$/ do |article_title, body|
   article.body.should == body
 end
 
+When /^I create a new category "(.*)"$/ do |category_name|
+  fill_in "Name", :with => category_name
+  click_button "Save"
+end
+
+
+When /^a category "(.*)" exists with description "(.*)"$/ do |category_name, description|
+  category = Category.new(:name => "#{category_name}", :description => "#{description}")
+  category.save!
+end
+
+When /^category "(.*)" has a description "(.*)"$/ do |category_name, description|
+  Category.find_by_name(category_name).description.should == description
+end
+
+When /^I select category "(.*)"$/ do |category_name|
+  visit "edit/#{Category.find_by_name(category_name).id}"
+  page.status_code.should == 200
+end

@@ -15,6 +15,14 @@ module HtmlSelectorsHelpers
 
     when "the page"
       "html > body"
+    when "the sidebar"
+      "div.sidebar"
+    when "the page header"
+      "div.page-header"
+    when "the left form"
+      "div.left_form"
+    when "the right table"
+      "div.right_table"
 
     # Add more mappings here.
     # Here is an example that pulls values out of the Regexp:
